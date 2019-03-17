@@ -4,6 +4,7 @@ height = 4;
 thickness = 0.5;
 faucet_radius = 3;
 faucet_offset = 24;
+spout_offset = 5;
 spout_width = 5;
 spout_length = 10;
 $fs=0.1;
@@ -69,15 +70,20 @@ module basin_with_faucet() {
 }
 
 module basin_with_spout_gap() {
-    
+    difference () {
+        basin_with_faucet();
+        translate([spout_offset + thickness, -thickness * 0.5, thickness]) {
+            cube([spout_width, thickness * 2, height]);
+        }
+    }    
 }
 
 module spout() {
     rotate([90, 0, 0]) {
         difference() {
-            cube([spout_width, height, spout_length]);
+            cube([spout_width + thickness * 2, height, spout_length]);
             translate([thickness, thickness, -0.1]) {
-                cube([spout_width - thickness * 2, height - thickness * 0.8, spout_length * 1.1]);
+                cube([spout_width, height - thickness * 0.8, spout_length * 1.1]);
             }
         }
     }
@@ -85,8 +91,10 @@ module spout() {
 
 module full_model() {
     union() {
-        basin_with_faucet();
-        spout();
+        basin_with_spout_gap();
+        translate([spout_offset, 0, 0]) {
+            spout();
+        }
     }
 }
 
