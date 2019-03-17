@@ -30,7 +30,7 @@ module inner_footprint() {
 module outer_footprint() {
     minkowski() {
         inner_footprint();
-        circle(r=thickness / 2);
+        circle(r=thickness);
     }
 }
 
@@ -48,16 +48,30 @@ module basin() {
 }
 
 module spout_gap() {
-    translate([spout_offset, -1 * thickness, thickness]) {
-        cube([spout_width, thickness * 2, height]);
-    }
+    cube([spout_width, thickness * 2, height]);
+}
+
+module spout() {
+    difference() {
+        cube([spout_width + thickness * 2, spout_length, height]);
+        translate([thickness, -1 * thickness, thickness]) {
+            cube([spout_width, spout_length + thickness * 2, height]);
+        };
+    };
 }
 
 module full_model() {
-    difference() {
-        basin();
-        spout_gap();
-    }
+    union() {
+        difference() {
+            basin();
+            translate([spout_offset, -1 * thickness, thickness]) {
+                spout_gap();
+            }
+        };
+        translate([spout_offset - thickness, -1 * spout_length - thickness, 0]) {
+            spout();
+        };
+    };
 }
 
 full_model();
