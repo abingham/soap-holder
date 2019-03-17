@@ -7,6 +7,9 @@ faucet_offset = 24;
 spout_offset = 5;
 spout_width = 5;
 spout_length = 10;
+slat_height = 2;
+slat_width = 0.5;
+slat_length = depth - thickness * 2;
 $fs=0.1;
 $fn=100;
 
@@ -60,6 +63,16 @@ module spout() {
     };
 }
 
+module slat() {
+    cube([slat_width, slat_length, slat_height]);
+}
+
+module slats(count, spacing) {
+    for (offset = [0 : count]) { 
+        translate([offset * spacing, 0, 0]) slat();
+    }
+}
+
 module full_model() {
     union() {
         difference() {
@@ -70,6 +83,9 @@ module full_model() {
         };
         translate([spout_offset - thickness, -1 * spout_length - thickness, 0]) {
             spout();
+        };
+        translate([thickness, thickness, thickness]) {
+            slats(10, 2);
         };
     };
 }
