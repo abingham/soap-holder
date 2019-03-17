@@ -3,55 +3,84 @@ depth = 10;
 height = 4;
 thickness = 0.5;
 faucet_radius = 3;
-faucet_offset = 24;
+faucet_center_offset = 24;
 spout_offset = 5;
 spout_width = 5;
 spout_length = 10;
+gutter_width = 0.5;
+slat_count = 10;
 slat_height = 2;
 slat_width = 0.5;
-slat_length = depth - thickness * 2;
+slat_spacing = (width - (thickness * 4)) / slat_count;
 $fs=0.1;
 $fn=100;
 
-module inner_footprint() {
-    intersection() {
+module footprint() {
+    translate([thickness, thickness, 0]) {
+        minkowski() {
+            intersection() {
+                difference() {
+                    union() {
+                        square([width - 2 * thickness, depth - 2 * thickness]);
+                        translate([faucet_center_offset, 0, 0]) {
+                            circle(r=faucet_radius + thickness, center=true);
+                        }
+                    };
+                    translate([faucet_center_offset, 0, 0]) {
+                        circle(r=faucet_radius, center=true);
+                    };
+                };
+                square([width - 2 * thickness, depth - 2 * thickness]);
+            };
+            circle(r=thickness);
+        }
+    }
+}
+
+module slats() {
+    for (index = [0 : 10]) {
+        offset = index * slat_spacing;
+        translate([offset, 0, 0]) {
+            cube([slat_width, depth, slat_height]);
+        }       
+    }
+}
+
+module slat_space() {
+    linear_extrude(heigh=height) {
+        offset(r = -1 * (thickness + gutter_width)) {
+            footprint();
+        }
+    }
+}
+
+module wall(height) {
+    linear_extrude(height=height) {
         difference() {
-            union() {
-                square([width, depth]);
-                translate([faucet_offset, 0, 0]) {
-                    circle(r=faucet_radius + thickness);
-                }
+            footprint();
+            offset(r=-1 * thickness) {
+                footprint();
             };
-            translate([faucet_offset, 0, 0]) {
-                circle(r=faucet_radius);
+            translate([spout_offset, 0, 0]) {
+                square([spout_width, thickness * 1.1]);
             };
-        };
-        square([width, depth]);
+        }
     };
 }
 
-module outer_footprint() {
-    minkowski() {
-        inner_footprint();
-        circle(r=thickness);
-    }
-}
+module base_plate() {
+    union() {
+        // The simple base plat
+        linear_extrude(height=thickness) footprint();
 
-module basin() {
-    difference() {
-        linear_extrude(height=height) {
-            outer_footprint();
-        };
+        // The slates with a gutter subtracted around the edge.
         translate([0, 0, thickness]) {
-            linear_extrude(height=height) {
-                inner_footprint();
-            };
-        };
-    }
-}
-
-module spout_gap() {
-    cube([spout_width, thickness * 2, height]);
+            intersection() {
+                slats();
+                slat_space();
+            }
+        }
+    } 
 }
 
 module spout() {
@@ -63,31 +92,20 @@ module spout() {
     };
 }
 
-module slat() {
-    cube([slat_width, slat_length, slat_height]);
-}
-
-module slats(count, spacing) {
-    for (offset = [0 : count]) { 
-        translate([offset * spacing, 0, 0]) slat();
+module full_model() {
+    union() {
+        base_plate();
+        translate([0, 0, thickness]) {
+            wall(height - thickness);
+        };
+        translate([spout_offset - thickness, -1 * spout_length, 0]) {
+            spout();
+        }
     }
 }
 
-module full_model() {
-    union() {
-        difference() {
-            basin();
-            translate([spout_offset, -1 * thickness, thickness]) {
-                spout_gap();
-            }
-        };
-        translate([spout_offset - thickness, -1 * spout_length - thickness, 0]) {
-            spout();
-        };
-        translate([thickness, thickness, thickness]) {
-            slats(10, 2);
-        };
-    };
-}
+// TODO: Some sort of tilt for the base to direct water to the spout.
+// TODO: A spout to the right of the faucet? How else do we get water from there?
+// TODO: Downward tilt to the spout.
 
 full_model();
