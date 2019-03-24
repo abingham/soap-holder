@@ -111,9 +111,9 @@ module base_plate() {
 module wall(height, thickness) {
     linear_extrude(height=height) {
         difference() {
-            footprint();
+            children(0);
             offset(delta=-1 * thickness) {
-                footprint();
+                children(0);
             };
             translate([spout_offset, 0, 0]) {
                 square([spout_width, thickness * 1.1]);
@@ -133,7 +133,7 @@ module spout() {
 
 union() {
     base_plate();
-    wall(wall_height, wall_thickness);
+    wall(wall_height, wall_thickness) { footprint(); }
     translate([spout_offset - wall_thickness, -1 * spout_length, 0]) {
         spout();
     }
