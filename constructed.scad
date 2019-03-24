@@ -27,6 +27,10 @@ slat_height = 0.5;
 slat_width = 0.5;
 slat_spacing = (full_width - (wall_thickness * 4)) / slat_count;
 gutter_width = 0.5;
+spout_offset = 2;
+spout_width = 2;
+spout_length = 4;
+
 
 $fs=0.1;
 $fn=100;
@@ -64,7 +68,7 @@ module cornered_footprint() {
 // The actual 2D footprint with rounded corners.
 module footprint() {
     minkowski() {
-        offset(r = corner_radius) {
+        offset(delta = -1 * corner_radius) {
             cornered_footprint();
         };
         circle(r = corner_radius);
@@ -82,7 +86,7 @@ module slats() {
 
 module slat_space() {
     linear_extrude(heigh=wall_height) {
-        offset(r = -1 * (wall_thickness + gutter_width)) {
+        offset(delta = -1 * (wall_thickness + gutter_width)) {
             footprint();
         }
     }
@@ -103,4 +107,33 @@ module base_plate() {
     } 
 }
 
-base_plate();
+module wall(height) {
+    linear_extrude(height=height) {
+        difference() {
+            footprint();
+            offset(delta=-1 * wall_thickness) {
+                footprint();
+            };
+            translate([spout_offset, 0, 0]) {
+                square([spout_width, wall_thickness * 1.1]);
+            };
+        }
+    };
+}
+
+module spout() {
+    difference() {
+        cube([spout_width + wall_thickness * 2, spout_length, wall_height]);
+        translate([wall_thickness, -1 * wall_thickness, wall_thickness]) {
+            cube([spout_width, spout_length + wall_thickness * 2, wall_height]);
+        };
+    };
+}
+
+union() {
+    base_plate();
+    wall(wall_height);
+    translate([spout_offset - wall_thickness, -1 * spout_length, 0]) {
+        spout();
+    }
+}
