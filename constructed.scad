@@ -16,9 +16,17 @@ b_dims = [6.6, 10.2];
 c_dims = [2, 2];
 d_dims = [c_dims[0], b_dims[1] - c_dims[1]];
 e_dims = [3.5, d_dims[1]];
+full_width = a_dims[0] + b_dims[0] + d_dims[0] + e_dims[0];
+full_depth = a_dims[1];
 faucet_radius = 5.6 / 2.0;
 wall_thickness = 0.2;
 corner_radius = 0.5;
+wall_height = 4;
+slat_count = 15;
+slat_height = 0.5;
+slat_width = 0.5;
+slat_spacing = (full_width - (wall_thickness * 4)) / slat_count;
+gutter_width = 0.5;
 
 $fs=0.1;
 $fn=100;
@@ -53,7 +61,7 @@ module cornered_footprint() {
     }
 }
 
-// The actual footprint with rounded corners.
+// The actual 2D footprint with rounded corners.
 module footprint() {
     minkowski() {
         offset(r = corner_radius) {
@@ -63,4 +71,36 @@ module footprint() {
     }
 }
 
-footprint();
+module slats() {
+    for (index = [0 : slat_count]) {
+        offset = index * slat_spacing;
+        translate([offset, 0, 0]) {
+            cube([slat_width, full_depth, slat_height]);
+        }       
+    }
+}
+
+module slat_space() {
+    linear_extrude(heigh=wall_height) {
+        offset(r = -1 * (wall_thickness + gutter_width)) {
+            footprint();
+        }
+    }
+}
+
+module base_plate() {
+    union() {
+        // The simple base plat
+        linear_extrude(height=wall_thickness) footprint();
+
+        // The slates with a gutter subtracted around the edge.
+        translate([0, 0, wall_thickness]) {
+            intersection() {
+                slats();
+                slat_space();
+            }
+        }
+    } 
+}
+
+base_plate();
