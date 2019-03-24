@@ -1,15 +1,16 @@
-width = 30;
+// measurements in centimeters
+width = 35;
 depth = 10;
 height = 4;
 thickness = 0.5;
-faucet_radius = 3;
-faucet_center_offset = 24;
+faucet_radius = 5.6;
+faucet_center_offset = 15.5;
 spout_offset = 5;
-spout_width = 5;
-spout_length = 10;
+spout_width = 2;
+spout_length = 4;
 gutter_width = 0.5;
-slat_count = 10;
-slat_height = 2;
+slat_count = 15;
+slat_height = 0.5;
 slat_width = 0.5;
 slat_spacing = (width - (thickness * 4)) / slat_count;
 $fs=0.1;
@@ -38,7 +39,7 @@ module footprint() {
 }
 
 module slats() {
-    for (index = [0 : 10]) {
+    for (index = [0 : slat_count]) {
         offset = index * slat_spacing;
         translate([offset, 0, 0]) {
             cube([slat_width, depth, slat_height]);
@@ -95,12 +96,12 @@ module spout() {
 module full_model() {
     union() {
         base_plate();
-        translate([0, 0, thickness]) {
-            wall(height - thickness);
-        };
-        translate([spout_offset - thickness, -1 * spout_length, 0]) {
-            spout();
-        }
+        // translate([0, 0, thickness]) {
+        //     wall(height - thickness);
+        // };
+        // translate([spout_offset - thickness, -1 * spout_length, 0]) {
+        //     spout();
+        // }
     }
 }
 
