@@ -75,24 +75,25 @@ module footprint() {
     }
 }
 
-module slats() {
-    for (index = [0 : slat_count]) {
-        offset = index * slat_spacing;
-        translate([offset, 0, 0]) {
-            cube([slat_width, full_depth, slat_height]);
-        }       
-    }
-}
-
-module slat_space() {
-    linear_extrude(heigh=wall_height) {
-        offset(delta = -1 * (wall_thickness + gutter_width)) {
-            footprint();
-        }
-    }
-}
 
 module base_plate() {
+    module slats() {
+        for (index = [0 : slat_count]) {
+            offset = index * slat_spacing;
+            translate([offset, 0, 0]) {
+                cube([slat_width, full_depth, slat_height]);
+            }       
+        }
+    }
+
+    module slat_space() {
+        linear_extrude(heigh=wall_height) {
+            offset(delta = -1 * (wall_thickness + gutter_width)) {
+                footprint();
+            }
+        }
+    }
+
     union() {
         // The simple base plat
         linear_extrude(height=wall_thickness) footprint();
