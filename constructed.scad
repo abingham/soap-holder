@@ -11,29 +11,29 @@
 // The faucet indentation will be at the bottom of B with its left edge at the
 // left side of B.
 
-a_dims = [13.2, 13.7];
-b_dims = [6.6, 10.2];
-c_dims = [2, 2];
+a_dims = [132, 137];
+b_dims = [66, 102];
+c_dims = [20, 20];
 d_dims = [c_dims[0], b_dims[1] - c_dims[1]];
-e_dims = [3.5, d_dims[1]];
+e_dims = [35, d_dims[1]];
 full_width = a_dims[0] + b_dims[0] + d_dims[0] + e_dims[0];
 full_depth = a_dims[1];
-faucet_radius = 5.6 / 2.0;
-wall_thickness = 0.2;
-corner_radius = 0.5;
-wall_height = 4;
+faucet_radius = 56 / 2;
+wall_thickness = 2;
+corner_radius = 5;
+wall_height = 40;
 slat_count = 15;
-slat_height = 0.5;
-slat_width = 0.5;
+slat_height = 5;
+slat_width = 5;
 slat_spacing = (full_width - (wall_thickness * 4)) / slat_count;
-gutter_width = 0.5;
-spout_offset = 2;
-spout_width = 2;
-spout_length = 4;
+gutter_width = 5;
+spout_offset = 20;
+spout_width = 20;
+spout_length = 40;
 
 
-$fs=0.1;
-$fn=100;
+$fs=1;
+$fn=20;
 
 // The straight-edge outline of the plate (i.e. without the faucet indentation)
 module hull() {
