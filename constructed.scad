@@ -115,7 +115,10 @@ module wall(height, thickness) {
             offset(delta=-1 * thickness) {
                 children(0);
             };
-            children([1:$children - 1]);
+            for (child_idx = [1 : 1 : $children - 1])
+            {
+                children(child_idx);
+            }
         }
     };
 }
@@ -133,11 +136,11 @@ union() {
     base_plate();
     wall(wall_height, wall_thickness) { 
         footprint();
-        translate([spout_offset, 0, 0]) {
-            square([spout_width, wall_thickness * 1.1]);
-        };
+        // translate([spout_offset, 0, 0]) {
+        //     square([spout_width, wall_thickness * 1.1]);
+        // };
     }
-    translate([spout_offset - wall_thickness, -1 * spout_length, 0]) {
-        spout();
-    }
+    // translate([spout_offset - wall_thickness, -1 * spout_length, 0]) {
+    //     spout();
+    // }
 }
