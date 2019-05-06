@@ -11,11 +11,11 @@
 // The faucet indentation will be at the bottom of B with its left edge at the
 // left side of B.
 
-a_dims = [132, 137];
+a_dims = [91, 137];
 b_dims = [66, 102];
 c_dims = [20, 20];
 d_dims = [c_dims[0], b_dims[1] - c_dims[1]];
-e_dims = [35, d_dims[1]];
+e_dims = [0, d_dims[1]];
 full_width = a_dims[0] + b_dims[0] + d_dims[0] + e_dims[0];
 full_depth = a_dims[1];
 faucet_radius = 56 / 2;
